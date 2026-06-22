@@ -1,28 +1,79 @@
-const blueTeam = [
-  { name: 'マルファイト', lane: 'Top', role: 'タンク', point: '岩が飛んだら戦闘開始' },
-  { name: 'リー・シン', lane: 'Jungle', role: 'ファイター', point: '蹴った方向を見る' },
-  { name: 'アーリ', lane: 'Mid', role: 'メイジ/アサシン', point: 'ハートが当たったらチャンス' },
-  { name: 'ジンクス', lane: 'Bot', role: 'マークスマン', point: '1人倒した後が本番' },
-  { name: 'レオナ', lane: 'Support', role: 'タンク', point: '光った敵が標的' }
-];
+const API_URL = 'https://script.google.com/macros/s/AKfycbzerQqO3f0G6LwvdtKU75xnK7ItPRxJzB79jjnPOfYjWZTG7b8oi48qEZWksuHetFKOwg/exec';
 
-const redTeam = [
-  { name: 'オーン', lane: 'Top', role: 'タンク', point: '巨大な羊が来たら注目' },
-  { name: 'ヴァイ', lane: 'Jungle', role: 'ファイター', point: '狙われた人に注目' },
-  { name: 'オリアナ', lane: 'Mid', role: 'メイジ', point: 'ボールの位置が重要' },
-  { name: 'ケイトリン', lane: 'Bot', role: 'マークスマン', point: '遠くから撃つ狙撃手' },
-  { name: 'スレッシュ', lane: 'Support', role: 'タンク/サポート', point: '鎖とランタンを見る' }
-];
+const lanes = ['Top', 'Jungle', 'Mid', 'Bot', 'Support'];
 
-function createCard(champ) {
+let champions = [];
+
+async function init() {
+  const response = await fetch(API_URL);
+  champions = await response.json();
+
+  createSelectors('blue');
+  createSelectors('red');
+}
+
+function createSelectors(team) {
+  const wrapper = document.getElementById(`${team}Selectors`);
+
+  wrapper.innerHTML = lanes.map(lane => `
+    <label>
+      ${lane}
+      <select data-team="${team}" data-lane="${lane}">
+        <option value="">選択してください</option>
+        ${champions.map(champ => `
+          <option value="${champ.riot_id}">${champ['キャラ名']}</option>
+        `).join('')}
+      </select>
+    </label>
+  `).join('');
+
+  wrapper.querySelectorAll('select').forEach(select => {
+    select.addEventListener('change', renderTeams);
+  });
+}
+
+function renderTeams() {
+  renderTeam('blue');
+  renderTeam('red');
+}
+
+function renderTeam(team) {
+  const target = document.getElementById(`${team}Team`);
+  const selects = document.querySelectorAll(`select[data-team="${team}"]`);
+
+  target.innerHTML = Array.from(selects).map(select => {
+    const riotId = select.value;
+    const lane = select.dataset.lane;
+    const champ = champions.find(item => item.riot_id === riotId);
+
+    if (!champ) {
+      return `
+        <article class="card empty">
+          <h3>${lane}</h3>
+          <p>未選択</p>
+        </article>
+      `;
+    }
+
+    return createCard(champ, lane);
+  }).join('');
+}
+
+function createCard(champ, lane) {
   return `
     <article class="card">
-      <h3>${champ.lane}：${champ.name}</h3>
-      <p>${champ.role}</p>
-      <p><strong>観戦ポイント：</strong>${champ.point}</p>
+      <h3>${lane}：${champ['キャラ名']}</h3>
+      <p>${champ['ロール']} / ${champ['戦闘位置']} / ${champ['タイプ']}</p>
+      <p><strong>強い時間帯：</strong>${champ['強い時間帯']}</p>
+      <p><strong>勝ち筋：</strong>${champ['勝ち筋']}</p>
+      <p><strong>強み：</strong>${champ['強み']}</p>
+      <p><strong>弱み：</strong>${champ['弱み']}</p>
+      <p><strong>観戦ポイント：</strong>${champ['観戦ポイント']}</p>
+      <p><strong>集団戦の役割：</strong>${champ['集団戦の役割']}</p>
+      <p><strong>危険度：</strong>${champ['危険度']}</p>
+      <p>${champ['初心者向け一言']}</p>
     </article>
   `;
 }
 
-document.getElementById('blueTeam').innerHTML = blueTeam.map(createCard).join('');
-document.getElementById('redTeam').innerHTML = redTeam.map(createCard).join('');
+init();
