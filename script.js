@@ -16,20 +16,72 @@ function createSelectors(team) {
   const wrapper = document.getElementById(`${team}Selectors`);
 
   wrapper.innerHTML = lanes.map(lane => `
-    <label>
-      ${lane}
-      <select data-team="${team}" data-lane="${lane}">
-        <option value="">選択してください</option>
-        ${champions.map(champ => `
-          <option value="${champ.riot_id}">${champ['キャラ名']}</option>
-        `).join('')}
-      </select>
-    </label>
+    <div class="champion-search">
+      <label>${lane}</label>
+      <input
+        type="text"
+        placeholder="キャラ名で検索"
+        data-team="${team}"
+        data-lane="${lane}"
+        autocomplete="off"
+      >
+      <div class="suggestions"></div>
+    </div>
   `).join('');
 
-  wrapper.querySelectorAll('select').forEach(select => {
-    select.addEventListener('change', renderTeams);
+  wrapper.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', handleSearch);
+    input.addEventListener('focus', handleSearch);
   });
+}
+
+function handleSearch(event) {
+  const input = event.target;
+  const keyword = input.value.trim().toLowerCase();
+  const box = input.nextElementSibling;
+
+  const results = champions
+    .filter(champ => {
+      const name = String(champ['キャラ名'] || '').toLowerCase();
+      const riotId = String(champ.riot_id || '').toLowerCase();
+      return name.includes(keyword) || riotId.includes(keyword);
+    })
+    .slice(0, 10);
+
+  box.innerHTML = results.map(champ => `
+    <button
+      type="button"
+      class="suggestion-item"
+      data-team="${input.dataset.team}"
+      data-lane="${input.dataset.lane}"
+      data-riot-id="${champ.riot_id}"
+      data-name="${champ['キャラ名']}"
+    >
+      ${champ['キャラ名']} <span>${champ.riot_id}</span>
+    </button>
+  `).join('');
+
+  box.querySelectorAll('button').forEach(button => {
+    button.addEventListener('click', selectChampion);
+  });
+}
+
+function selectChampion(event) {
+  const button = event.currentTarget;
+  const team = button.dataset.team;
+  const lane = button.dataset.lane;
+  const riotId = button.dataset.riotId;
+  const name = button.dataset.name;
+
+  const input = document.querySelector(
+    `input[data-team="${team}"][data-lane="${lane}"]`
+  );
+
+  input.value = name;
+  input.dataset.riotId = riotId;
+  input.nextElementSibling.innerHTML = '';
+
+  renderTeams();
 }
 
 function renderTeams() {
@@ -39,11 +91,11 @@ function renderTeams() {
 
 function renderTeam(team) {
   const target = document.getElementById(`${team}Team`);
-  const selects = document.querySelectorAll(`select[data-team="${team}"]`);
+  const inputs = document.querySelectorAll(`input[data-team="${team}"]`);
 
-  target.innerHTML = Array.from(selects).map(select => {
-    const riotId = select.value;
-    const lane = select.dataset.lane;
+  target.innerHTML = Array.from(inputs).map(input => {
+    const riotId = input.dataset.riotId;
+    const lane = input.dataset.lane;
     const champ = champions.find(item => item.riot_id === riotId);
 
     if (!champ) {

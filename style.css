@@ -70,3 +70,47 @@ select {
     grid-template-columns: 1fr;
   }
 }
+.champion-search {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.champion-search input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.suggestions {
+  position: absolute;
+  z-index: 10;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.suggestion-item {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px;
+  border: 0;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+}
+
+.suggestion-item:hover {
+  background: #f0f0f0;
+}
+
+.suggestion-item span {
+  opacity: 0.5;
+  font-size: 12px;
+}
