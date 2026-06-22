@@ -9,18 +9,82 @@ h1 {
   text-align: center;
 }
 
+.selectors,
 .board {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 0 auto 24px;
 }
 
-.team {
+.team,
+.selectors > div {
   background: #fff;
   border-radius: 16px;
   padding: 16px;
+  box-sizing: border-box;
+}
+
+.champion-search {
+  position: relative;
+  margin-bottom: 14px;
+}
+
+.champion-search label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+.champion-search input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.suggestions {
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-top: 4px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.suggestions:empty {
+  display: none;
+}
+
+.suggestion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px;
+  border: 0;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+}
+
+.suggestion-item:last-child {
+  border-bottom: 0;
+}
+
+.suggestion-item:hover {
+  background: #f0f0f0;
+}
+
+.suggestion-item span {
+  opacity: 0.5;
+  font-size: 12px;
 }
 
 .card {
@@ -35,82 +99,13 @@ h1 {
   margin: 0 0 8px;
 }
 
-@media (max-width: 768px) {
-  .board {
-    grid-template-columns: 1fr;
-  }
-}
-.selectors {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  max-width: 1200px;
-  margin: 0 auto 24px;
-}
-
-.selectors label {
-  display: grid;
-  gap: 6px;
-  margin-bottom: 10px;
-  font-weight: bold;
-}
-
-select {
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
 .empty {
   opacity: 0.5;
 }
 
 @media (max-width: 768px) {
-  .selectors {
+  .selectors,
+  .board {
     grid-template-columns: 1fr;
   }
-}
-.champion-search {
-  position: relative;
-  margin-bottom: 12px;
-}
-
-.champion-search input {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
-.suggestions {
-  position: absolute;
-  z-index: 10;
-  left: 0;
-  right: 0;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin-top: 4px;
-  overflow: hidden;
-}
-
-.suggestion-item {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  padding: 10px;
-  border: 0;
-  background: #fff;
-  cursor: pointer;
-  text-align: left;
-}
-
-.suggestion-item:hover {
-  background: #f0f0f0;
-}
-
-.suggestion-item span {
-  opacity: 0.5;
-  font-size: 12px;
 }
