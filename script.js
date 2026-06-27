@@ -5,6 +5,8 @@ const lanes = ['Top', 'Jungle', 'Mid', 'Bot', 'Support'];
 let champions = [];
 
 async function init() {
+  await loadDdragonVersion();
+
   const response = await fetch(API_URL);
   champions = await response.json();
 
@@ -46,7 +48,7 @@ function handleSearch(event) {
       const riotId = String(champ.riot_id || '').toLowerCase();
       return name.includes(keyword) || riotId.includes(keyword);
     })
-    .slice(0, 10);
+    .slice(0, 200);
 
   box.innerHTML = results.map(champ => `
     <button
@@ -57,7 +59,7 @@ function handleSearch(event) {
       data-riot-id="${champ.riot_id}"
       data-name="${champ['キャラ名']}"
     >
-      ${champ['キャラ名']} <span>${champ.riot_id}</span>
+        <img class="champion-icon-select" src="${getChampionIconUrl(champ.riot_id)}" alt="${champ['キャラ名']}"><span>${champ['キャラ名']}</span> <span>${champ.riot_id}</span>
     </button>
   `).join('');
 
@@ -79,7 +81,6 @@ function selectChampion(event) {
 
   input.value = name;
   input.dataset.riotId = riotId;
-  input.nextElementSibling.innerHTML = '';
 
   renderTeams();
 }
@@ -110,12 +111,17 @@ function renderTeam(team) {
     return createCard(champ, lane);
   }).join('');
 }
-
 function createCard(champ, lane) {
   return `
     <article class="card">
-      <h3>${lane}：${champ['キャラ名']}</h3>
-      <p>${champ['ロール']} / ${champ['戦闘位置']} / ${champ['タイプ']}</p>
+      <div class="card-header">
+        <img class="champion-icon" src="${getChampionIconUrl(champ.riot_id)}" alt="${champ['キャラ名']}">
+        <div>
+          <h3>${lane}：${champ['キャラ名']}</h3>
+          <p>${champ['ロール']} / ${champ['戦闘位置']} / ${champ['タイプ']}</p>
+        </div>
+      </div>
+
       <p><strong>強い時間帯：</strong>${champ['強い時間帯']}</p>
       <p><strong>勝ち筋：</strong>${champ['勝ち筋']}</p>
       <p><strong>強み：</strong>${champ['強み']}</p>
@@ -128,4 +134,26 @@ function createCard(champ, lane) {
   `;
 }
 
+let ddragonVersion = '';
+
+async function loadDdragonVersion() {
+  const response = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
+  const versions = await response.json();
+  ddragonVersion = versions[0];
+}
+
+function getChampionIconUrl(riotId) {
+  return `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/img/champion/${riotId}.png`;
+}
+
 init();
+
+document.addEventListener('click', (event) => {
+  const isSearchArea = event.target.closest('.champion-search');
+
+  if (!isSearchArea) {
+    document.querySelectorAll('.suggestions').forEach(box => {
+      box.innerHTML = '';
+    });
+  }
+});

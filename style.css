@@ -30,6 +30,12 @@ h1 {
   position: relative;
   margin-bottom: 14px;
 }
+.champion-search {
+  position: relative;
+  margin-bottom: 14px;
+  padding-bottom: 0;
+  border: 0;
+}
 
 .champion-search label {
   display: block;
@@ -43,17 +49,21 @@ h1 {
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #ccc;
+  background: #fff;
 }
 
 .suggestions {
-  position: relative;
-  z-index: 1;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 100;
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
-  margin-top: 4px;
-  max-height: 220px;
+  max-height: 260px;
   overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .suggestions:empty {
@@ -66,7 +76,7 @@ h1 {
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 10px;
+  padding: 10px 12px;
   border: 0;
   border-bottom: 1px solid #eee;
   background: #fff;
@@ -85,27 +95,26 @@ h1 {
 .suggestion-item span {
   opacity: 0.5;
   font-size: 12px;
+  white-space: nowrap;
+}
+.card-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
-.card {
-  border: 1px solid #ddd;
+.champion-icon {
+  width: 56px;
+  height: 56px;
   border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 12px;
-  background: #fafafa;
+  object-fit: cover;
+  flex-shrink: 0;
 }
-
-.card h3 {
-  margin: 0 0 8px;
-}
-
-.empty {
-  opacity: 0.5;
-}
-
-@media (max-width: 768px) {
-  .selectors,
-  .board {
-    grid-template-columns: 1fr;
-  }
+.champion-icon-select {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
 }
